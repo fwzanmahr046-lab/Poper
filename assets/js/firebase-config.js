@@ -2,8 +2,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// ============================================================
+// إعدادات Firebase لمشروع "Poper"
+// ⚠️ لا تشارك هذه المفاتيح علناً
+// ============================================================
 const firebaseConfig = {
-  apiKey: "AIzaSyALtwlWE7LMM-AY2_7OWr4Tuw_bpO_y1v8",
+  apiKey: "AIzaSyALtWWE7LMM-AY2_7OWr4Tuw_bp0_y1v8",
   authDomain: "poper-c38ba.firebaseapp.com",
   projectId: "poper-c38ba",
   storageBucket: "poper-c38ba.firebasestorage.app",
