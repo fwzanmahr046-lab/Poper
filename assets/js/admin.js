@@ -17,7 +17,7 @@ const toast = $("#toast");
 let products = [];
 let orders = [];
 
-const ADMIN_EMAIL = "admin@elegance.com";
+const ADMIN_EMAIL = "admin@test.com";
 
 const fmt = (n) => new Intl.NumberFormat("ar-IQ", { maximumFractionDigits: 0 }).format(n) + " د.ع";
 const dateFmt = (ts) => {
