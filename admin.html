@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم — ÉLÉGANCE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+<body>
+
+  <div class="login" id="loginScreen">
+    <div class="login__card">
+      <span class="logo">ÉLÉGANCE</span>
+      <h1>لوحة التحكم</h1>
+      <p>سجّل الدخول للمتابعة</p>
+      <form id="loginForm">
+        <div class="field"><label>البريد الإلكتروني</label><input type="email" name="email" required /></div>
+        <div class="field"><label>كلمة المرور</label><input type="password" name="password" required /></div>
+        <button class="btn btn--primary btn--block" type="submit">تسجيل الدخول</button>
+      </form>
+      <p class="login__err" id="loginError" hidden></p>
+    </div>
+  </div>
+
+  <div class="app" id="app" hidden>
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <span class="logo">ÉLÉGANCE</span>
+        <small>لوحة التحكم</small>
+      </div>
+      <nav class="sidebar__nav">
+        <button class="side-link is-active" data-view="dashboard">لوحة المعلومات</button>
+        <button class="side-link" data-view="products">المنتجات</button>
+        <button class="side-link" data-view="orders">الطلبات <span class="badge" id="ordersBadge">0</span></button>
+        <button class="side-link" data-view="settings">الإعدادات</button>
+      </nav>
+      <button class="side-link side-link--logout" id="logoutBtn">تسجيل الخروج</button>
+    </aside>
+
+    <main class="main">
+      <header class="main__head">
+        <h2 id="viewTitle">لوحة المعلومات</h2>
+        <div class="main__user" id="userEmail"></div>
+      </header>
+
+      <section class="view is-active" data-view="dashboard">
+        <div class="stats">
+          <div class="stat"><span>المنتجات</span><strong id="statProducts">0</strong></div>
+          <div class="stat"><span>الطلبات</span><strong id="statOrders">0</strong></div>
+          <div class="stat"><span>قيد الانتظار</span><strong id="statPending">0</strong></div>
+          <div class="stat"><span>إجمالي المبيعات</span><strong id="statSales">0 د.ع</strong></div>
+        </div>
+        <div class="card">
+          <h3>أحدث الطلبات</h3>
+          <div id="recentOrders"></div>
+        </div>
+      </section>
+
+      <section class="view" data-view="products">
+        <div class="view__actions">
+          <button class="btn btn--primary" id="newProductBtn">+ منتج جديد</button>
+        </div>
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>الصورة</th><th>الاسم</th><th>القسم</th><th>السعر</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="productsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" data-view="orders">
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>المنتجات</th><th>الإجمالي</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" data-view="settings">
+        <div class="card">
+          <h3>معلومات الحساب</h3>
+          <p class="muted">البريد: <strong id="settingsEmail"></strong></p>
+          <p class="muted">معرّف المستخدم: <code id="settingsUid"></code></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="productEditor">
+    <div class="modal__overlay" data-close-editor></div>
+    <div class="modal__panel">
+      <button class="icon-btn modal__close" data-close-editor>×</button>
+      <h3 id="editorTitle">منتج جديد</h3>
+      <form id="productForm">
+        <input type="hidden" name="id" />
+        <div class="field"><label>اسم المنتج</label><input name="name" required /></div>
+        <div class="field"><label>الوصف</label><textarea name="description" rows="3"></textarea></div>
+        <div class="row">
+          <div class="field"><label>السعر</label><input name="price" type="number" min="0" required /></div>
+          <div class="field"><label>السعر قبل الخصم (اختياري)</label><input name="comparePrice" type="number" min="0" /></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>القسم</label><input name="category" placeholder="مثال: فساتين" required /></div>
+          <div class="field"><label>المقاسات (فاصلة)</label><input name="sizes" placeholder="S,M,L,XL" /></div>
+        </div>
+        <div class="field">
+          <label>صورة المنتج</label>
+          <input type="file" name="imageFile" accept="image/*" id="imageFile" />
+          <input type="hidden" name="image" />
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
+        <div class="field field--check">
+          <label><input type="checkbox" name="active" checked /> منتج نشط (ظاهر في المتجر)</label>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="orderModal">
+    <div class="modal__overlay" data-close-order></div>
+    <div class="modal__panel">
+      <button class="icon-btn modal__close" data-close-order>×</button>
+      <div id="orderDetails"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>
