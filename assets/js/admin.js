@@ -1,4 +1,4 @@
-import { db, auth, storage } from "./firebase-config.js";
+import { db, auth } from "./firebase-config.js";
 import {
   onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -6,9 +6,6 @@ import {
   collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc,
   serverTimestamp, orderBy, query
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -160,13 +157,13 @@ function closeEditor() {
   editor.classList.remove("is-open");
 }
 
-$("#imageFile").addEventListener("change", (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => imagePreview.innerHTML = `<img src="${ev.target.result}" />`;
-  reader.readAsDataURL(f);
-});
+const imageUrlInput = $("#imageUrl");
+if (imageUrlInput) {
+  imageUrlInput.addEventListener("input", (e) => {
+    const url = e.target.value.trim();
+    imagePreview.innerHTML = url ? `<img src="${url}" onerror="this.style.display='none'" />` : "";
+  });
+}
 
 productForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -176,15 +173,6 @@ productForm.addEventListener("submit", async (e) => {
   try {
     const fd = new FormData(productForm);
     const id = fd.get("id");
-    let imageUrl = fd.get("image") || "";
-
-    const file = $("#imageFile").files[0];
-    if (file) {
-      const path = `products/${Date.now()}_${file.name}`;
-      const sref = ref(storage, path);
-      await uploadBytes(sref, file);
-      imageUrl = await getDownloadURL(sref);
-    }
 
     const data = {
       name: fd.get("name").trim(),
@@ -193,7 +181,7 @@ productForm.addEventListener("submit", async (e) => {
       comparePrice: fd.get("comparePrice") ? Number(fd.get("comparePrice")) : null,
       category: (fd.get("category") || "").trim(),
       sizes: (fd.get("sizes") || "").split(",").map((s) => s.trim()).filter(Boolean),
-      image: imageUrl,
+      image: (fd.get("image") || "").trim(),
       active: productForm.active.checked
     };
 
