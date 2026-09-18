@@ -17,6 +17,8 @@ const toast = $("#toast");
 let products = [];
 let orders = [];
 
+const ADMIN_EMAIL = "admin@elegance.com";
+
 const fmt = (n) => new Intl.NumberFormat("ar-IQ", { maximumFractionDigits: 0 }).format(n) + " د.ع";
 const dateFmt = (ts) => {
   if (!ts) return "—";
@@ -32,8 +34,7 @@ const showToast = (msg, type = "") => {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const token = await user.getIdTokenResult();
-    if (!token.claims.admin) {
+    if (user.email !== ADMIN_EMAIL) {
       await signOut(auth);
       loginError.textContent = "هذا الحساب لا يملك صلاحيات المدير.";
       loginError.hidden = false;
