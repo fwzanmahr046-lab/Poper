@@ -106,10 +106,12 @@
           <div class="field"><label>المقاسات (فاصلة)</label><input name="sizes" placeholder="S,M,L,XL" /></div>
         </div>
         <div class="field">
-          <label>صورة المنتج</label>
-          <input type="file" name="imageFile" accept="image/*" id="imageFile" />
-          <input type="hidden" name="image" />
+          <label>رابط صورة المنتج</label>
+          <input type="url" name="image" id="imageUrl" placeholder="https://example.com/image.jpg" />
           <div id="imagePreview" class="image-preview"></div>
+          <p style="font-size:.75rem;color:var(--ink-soft);margin-top:.5rem;">
+            💡 ارفع الصورة على موقع مثل <a href="https://imgbb.com" target="_blank" style="color:var(--gold);text-decoration:underline;">ImgBB</a> والصق الرابط هنا
+          </p>
         </div>
         <div class="field field--check">
           <label><input type="checkbox" name="active" checked /> منتج نشط (ظاهر في المتجر)</label>
