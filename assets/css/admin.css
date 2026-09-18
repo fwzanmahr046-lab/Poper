@@ -249,3 +249,23 @@ input, textarea, select { font-family: inherit; }
   .table { font-size: .82rem; }
   .table th, .table td { padding: .6rem .35rem; }
 }
+
+/* ============================================ */
+/* ✅ إصلاح اتجاه حقول الإيميل وكلمة المرور      */
+/* ============================================ */
+#loginForm input[type="email"],
+#loginForm input[type="password"],
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="url"],
+.field input[type="tel"] {
+  direction: ltr;
+  text-align: left;
+  font-family: 'Tajawal', system-ui, sans-serif;
+}
+
+#loginForm input[type="email"]::placeholder,
+#loginForm input[type="password"]::placeholder {
+  direction: ltr;
+  text-align: left;
+}
