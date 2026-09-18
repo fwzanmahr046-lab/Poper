@@ -32,14 +32,23 @@ const showToast = (msg, type = "") => {
   showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 2600);
 };
 
+// ================================================
+// تشخيص: نطبع المفاتيح للتأكد من الربط
+// ================================================
+console.log("🔥 Firebase initialized");
+console.log("👤 Admin email expected:", ADMIN_EMAIL);
+
 onAuthStateChanged(auth, async (user) => {
+  console.log("🔄 Auth state changed:", user ? user.email : "no user");
   if (user) {
     if (user.email !== ADMIN_EMAIL) {
+      console.warn("❌ Email mismatch:", user.email, "!==", ADMIN_EMAIL);
       await signOut(auth);
       loginError.textContent = "هذا الحساب لا يملك صلاحيات المدير.";
       loginError.hidden = false;
       return;
     }
+    console.log("✅ Admin logged in:", user.email);
     loginScreen.hidden = true;
     app.hidden = false;
     $("#userEmail").textContent = user.email;
@@ -53,19 +62,51 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+// ================================================
+// تسجيل الدخول — مع كشف الأخطاء الفعلي
+// ================================================
 $("#loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   loginError.hidden = true;
+
   const fd = new FormData(e.target);
+  const email = (fd.get("email") || "").trim().toLowerCase();
+  const password = fd.get("password") || "";
+
+  console.log("🔐 محاولة دخول:", { email, passwordLength: password.length });
+
   const btn = e.target.querySelector("button");
-  btn.disabled = true; btn.textContent = "جارٍ الدخول...";
+  btn.disabled = true;
+  btn.textContent = "جارٍ الدخول...";
+
   try {
-    await signInWithEmailAndPassword(auth, fd.get("email"), fd.get("password"));
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    console.log("✅ نجح الدخول:", cred.user.email);
+    // لا نحتاج شي - onAuthStateChanged يتكفّل بالباقي
   } catch (err) {
-    loginError.textContent = "بيانات الدخول غير صحيحة.";
+    console.error("❌ فشل الدخول:", err.code, "-", err.message);
+
+    const messages = {
+      "auth/invalid-email": "البريد الإلكتروني غير صالح",
+      "auth/user-disabled": "الحساب معطّل",
+      "auth/user-not-found": "المستخدم غير موجود في Firebase",
+      "auth/wrong-password": "كلمة المرور خاطئة",
+      "auth/invalid-credential": "البريد أو كلمة المرور غير صحيحة",
+      "auth/invalid-login-credentials": "البريد أو كلمة المرور غير صحيحة",
+      "auth/too-many-requests": "محاولات كثيرة — انتظر دقيقة ثم أعد المحاولة",
+      "auth/network-request-failed": "فشل الاتصال — تحقق من الإنترنت",
+      "auth/operation-not-allowed": "تسجيل الدخول بالبريد غير مُفعّل في Firebase",
+      "auth/unauthorized-domain": "النطاق غير مصرّح به في Firebase",
+      "auth/invalid-api-key": "مفتاح API غير صحيح",
+      "auth/app-not-authorized": "التطبيق غير مصرّح به"
+    };
+
+    const msg = messages[err.code] || `${err.code}: ${err.message}`;
+    loginError.textContent = msg;
     loginError.hidden = false;
   } finally {
-    btn.disabled = false; btn.textContent = "تسجيل الدخول";
+    btn.disabled = false;
+    btn.textContent = "تسجيل الدخول";
   }
 });
 
@@ -92,6 +133,9 @@ function subscribeProducts() {
     products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     renderProducts();
     updateStats();
+  }, (err) => {
+    console.error("❌ Products error:", err);
+    showToast("فشل تحميل المنتجات", "toast--error");
   });
 }
 function renderProducts() {
@@ -224,6 +268,8 @@ function subscribeOrders() {
     const badge = $("#ordersBadge");
     badge.textContent = pending;
     badge.dataset.empty = pending === 0 ? "true" : "false";
+  }, (err) => {
+    console.error("❌ Orders error:", err);
   });
 }
 
